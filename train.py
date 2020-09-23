@@ -189,8 +189,8 @@ if __name__ == "__main__":
     CONFIG['height'] = int(args.height)
     CONFIG['crop_factor_x'] = float(args.train_crop_divide_factor_x)
     CONFIG['crop_factor_y'] = float(args.train_crop_divide_factor_y)
-    CONFIG['width_train'] = in
-    CONFIG['height_train']  = 
+    CONFIG['width_train'] = int(CONFIG['width'] / CONFIG['crop_factor_x']) # will be cropped from width_test size
+    CONFIG['height_train']  = int(CONFIG['height'] / CONFIG['crop_factor_y']) # will be cropped from width_test size
     CONFIG['init_lr'] = float(args.init_lr)
     CONFIG['median_frequency'] = float(args.median_frequency)
     CONFIG['zoom_augmentation'] = float(args.zoom_augmentation)
