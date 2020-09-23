@@ -103,7 +103,10 @@ def _train(loader, optimizer, loss_function, model, config=None, lr=None,
         loader.suffle_segmentation()  # sheffle training set every epoch
         print('Epoch time seconds: ' + str(time.time()-start_time_epoch))
 
-def train(n_classes, batch_size, epochs, width, height, crop_factor_x, crop_factor_y, width_train, height_train, initi_lr, median_frequency, zoom_augmentation):
+def train(n_classes=11, batch_size=16, epochs=100, width=500, height=500, crop_factor_x=1, crop_factor_y=1, 
+            initi_lr=1e-4, median_frequency=.15, zoom_augmentation=.2, dataset_path='datasets/endoscopy', 
+            weights_path='weights/endoscopy/model', preprocess='imagenet'):
+
     CONFIG['n_classes'] = n_classes
     CONFIG['batch_size'] = batch_size
     CONFIG['epochs'] = epochs
@@ -111,11 +114,15 @@ def train(n_classes, batch_size, epochs, width, height, crop_factor_x, crop_fact
     CONFIG['height'] = height
     CONFIG['crop_factor_x'] = crop_factor_x
     CONFIG['crop_factor_y'] = crop_factor_y
-    CONFIG['width_train'] = width_train # will be cropped from width_test size
-    CONFIG['height_train']  = height_train  # will be cropped from height_test size
+    CONFIG['width_train'] = int(CONFIG['width'] / CONFIG['crop_factor_x']) # will be cropped from width_test size
+    CONFIG['height_train']  = int(CONFIG['height'] / CONFIG['crop_factor_y'])  # will be cropped from height_test size
     CONFIG['init_lr'] = init_lr
     CONFIG['median_frequency'] = median_frequency
     CONFIG['zoom_augmentation'] = zoom_augmentation
+    CONFIG['dataset_path'] = dataset_path
+    CONFIG['weights_path'] = weights_path
+    CONFIG['preprocess'] = preprocess
+
 
     assert CONFIG['width'] * (1 - CONFIG['zoom_augmentation'] ) >= CONFIG['width_train']
     assert CONFIG['height'] * (1 - CONFIG['zoom_augmentation'] ) >= CONFIG['height_train']
@@ -169,8 +176,8 @@ if __name__ == "__main__":
     parser.add_argument("--train_crop_divide_factor_x", help="Factor to divide the images resolution when training (x_axis)", default=2)
     parser.add_argument("--train_crop_divide_factor_y", help="Factor to divide the images resolution when training (y_axis)", default=1.25)
     parser.add_argument("--zoom_augmentation", help="Factor to zoom in or zoom out during augmentation, i.e., zoom (1+factor, 1-factor)", default=0.2)
-    parser.add_argument("--weights_path", help="Path to the model weights", default='weights/camvid_resnet/model')
-    parser.add_argument("--dataset_path", help="Path to the dataset", default='datasets/camvid')
+    parser.add_argument("--weights_path", help="Path to the model weights", default='weights/endoscopy/model')
+    parser.add_argument("--dataset_path", help="Path to the dataset", default='datasets/endoscopy')
     parser.add_argument("--preprocess", help="Preprocess of the dataset", choices=['imagenet', 'normalize', None], default='imagenet')
     args = parser.parse_args()
 
@@ -182,8 +189,8 @@ if __name__ == "__main__":
     CONFIG['height'] = int(args.height)
     CONFIG['crop_factor_x'] = float(args.train_crop_divide_factor_x)
     CONFIG['crop_factor_y'] = float(args.train_crop_divide_factor_y)
-    CONFIG['width_train'] = int(CONFIG['width'] / CONFIG['crop_factor_x']) # will be cropped from width_test size
-    CONFIG['height_train']  = int(CONFIG['height'] / CONFIG['crop_factor_y'])  # will be cropped from height_test size
+    CONFIG['width_train'] = in
+    CONFIG['height_train']  = 
     CONFIG['init_lr'] = float(args.init_lr)
     CONFIG['median_frequency'] = float(args.median_frequency)
     CONFIG['zoom_augmentation'] = float(args.zoom_augmentation)
