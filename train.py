@@ -107,6 +107,7 @@ def train(n_classes=11, batch_size=16, epochs=100, width=500, height=500, crop_f
             initi_lr=1e-4, median_frequency=.15, zoom_augmentation=.2, dataset_path='datasets/endoscopy', 
             weights_path='weights/endoscopy/model', preprocess='imagenet'):
 
+    CONFIG = {}
     CONFIG['n_classes'] = n_classes
     CONFIG['batch_size'] = batch_size
     CONFIG['epochs'] = epochs
