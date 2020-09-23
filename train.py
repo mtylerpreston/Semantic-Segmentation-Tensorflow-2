@@ -133,7 +133,7 @@ def train(n_classes=11, batch_size=16, epochs=100, width=960, height=720, crop_f
     n_gpu = 0
     os.environ["CUDA_VISIBLE_DEVICES"] = str(n_gpu)
     # Loader
-    loader = Loader.Loader(dataFolderPath=args.dataset_path, n_classes=CONFIG['n_classes'], width=CONFIG['width'], height=CONFIG['height'], median_frequency=CONFIG['median_frequency'])
+    loader = Loader.Loader(dataFolderPath=CONFIG['dataset_path'], n_classes=CONFIG['n_classes'], width=CONFIG['width'], height=CONFIG['height'], median_frequency=CONFIG['median_frequency'])
     print('Dataset loaded...')
     # build model
     #model = MiniNetv2.MiniNetv2p(num_classes=CONFIG['n_classes'])
@@ -145,7 +145,7 @@ def train(n_classes=11, batch_size=16, epochs=100, width=960, height=720, crop_f
     loss_function = tf.keras.losses.CategoricalCrossentropy()
 
     # restore if model saved and show number of params
-    restore_state(model, args.weights_path)
+    restore_state(model, CONFIG['weights_path'])
 
     init_model(model, (1, CONFIG['width'], CONFIG['height'], 3))
     get_params(model)
@@ -154,12 +154,12 @@ def train(n_classes=11, batch_size=16, epochs=100, width=960, height=720, crop_f
     # Train
     print('Training...')
     _train(loader=loader, optimizer=optimizer, loss_function=loss_function, model=model, config=CONFIG,
-          lr=learning_rate,  name_best_model=args.weights_path, evaluation=True, preprocess_mode=args.preprocess)
+          lr=learning_rate,  name_best_model=CONFIG['weights_path'], evaluation=True, preprocess_mode=CONFIG['preprocess'])
 
 
     print('Testing model')
     test_acc, test_miou = get_metrics(loader, model, loader.n_classes, train=False, flip_inference=True, scales=[1, 2, 1.5, 0.5, 0.75],
-                                      write_images=True, preprocess_mode=args.preprocess, time_exect=True)
+                                      write_images=True, preprocess_mode=CONFIG['preprocess'], time_exect=True)
     print('Test accuracy: ' + str(test_acc.numpy()))
     print('Test miou: ' + str(test_miou.numpy()))
 
