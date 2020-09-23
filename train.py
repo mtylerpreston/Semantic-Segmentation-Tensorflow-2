@@ -103,7 +103,7 @@ def _train(loader, optimizer, loss_function, model, config=None, lr=None,
         loader.suffle_segmentation()  # sheffle training set every epoch
         print('Epoch time seconds: ' + str(time.time()-start_time_epoch))
 
-def train(n_classes=11, batch_size=16, epochs=100, width=500, height=500, crop_factor_x=1, crop_factor_y=1, 
+def train(n_classes=11, batch_size=16, epochs=100, width=960, height=720, crop_factor_x=2, crop_factor_y=1.25, 
             init_lr=1e-4, median_frequency=.15, zoom_augmentation=.2, dataset_path='datasets/endoscopy', 
             weights_path='weights/endoscopy/model', preprocess='imagenet'):
 
