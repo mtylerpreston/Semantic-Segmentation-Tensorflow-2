@@ -43,7 +43,7 @@ def train_step(model, x, y, mask, loss_function, optimizer, size_input, zoom_fac
 
 
 # Trains the model for certains epochs on a dataset
-def train(loader, optimizer, loss_function, model, config=None, lr=None,
+def _train(loader, optimizer, loss_function, model, config=None, lr=None,
           evaluation=True, name_best_model='weights/best', preprocess_mode=None):
     # Parameters for training
     training_samples = len(loader.image_train_list)
@@ -102,6 +102,58 @@ def train(loader, optimizer, loss_function, model, config=None, lr=None,
 
         loader.suffle_segmentation()  # sheffle training set every epoch
         print('Epoch time seconds: ' + str(time.time()-start_time_epoch))
+
+def train(n_classes, batch_size, epochs, width, height, crop_factor_x, crop_factor_y, width_train, height_train, initi_lr, median_frequency, zoom_augmentation):
+    CONFIG['n_classes'] = n_classes
+    CONFIG['batch_size'] = batch_size
+    CONFIG['epochs'] = epochs
+    CONFIG['width'] = width
+    CONFIG['height'] = height
+    CONFIG['crop_factor_x'] = crop_factor_x
+    CONFIG['crop_factor_y'] = crop_factor_y
+    CONFIG['width_train'] = width_train # will be cropped from width_test size
+    CONFIG['height_train']  = height_train  # will be cropped from height_test size
+    CONFIG['init_lr'] = init_lr
+    CONFIG['median_frequency'] = median_frequency
+    CONFIG['zoom_augmentation'] = zoom_augmentation
+
+    assert CONFIG['width'] * (1 - CONFIG['zoom_augmentation'] ) >= CONFIG['width_train']
+    assert CONFIG['height'] * (1 - CONFIG['zoom_augmentation'] ) >= CONFIG['height_train']
+
+
+    # GPU to use
+    n_gpu = 0
+    os.environ["CUDA_VISIBLE_DEVICES"] = str(n_gpu)
+    # Loader
+    loader = Loader.Loader(dataFolderPath=args.dataset_path, n_classes=CONFIG['n_classes'], width=CONFIG['width'], height=CONFIG['height'], median_frequency=CONFIG['median_frequency'])
+    print('Dataset loaded...')
+    # build model
+    #model = MiniNetv2.MiniNetv2p(num_classes=CONFIG['n_classes'])
+    model = ResNet50.ResNet50Seg(CONFIG['n_classes'], input_shape=(None, None, 3), weights='imagenet')
+
+    # optimizer
+    learning_rate = tf.Variable(CONFIG['init_lr'])
+    optimizer = tf.keras.optimizers.Adam(learning_rate)
+    loss_function = tf.keras.losses.CategoricalCrossentropy()
+
+    # restore if model saved and show number of params
+    restore_state(model, args.weights_path)
+
+    init_model(model, (1, CONFIG['width'], CONFIG['height'], 3))
+    get_params(model)
+
+
+    # Train
+    print('Training...')
+    _train(loader=loader, optimizer=optimizer, loss_function=loss_function, model=model, config=CONFIG,
+          lr=learning_rate,  name_best_model=args.weights_path, evaluation=True, preprocess_mode=args.preprocess)
+
+
+    print('Testing model')
+    test_acc, test_miou = get_metrics(loader, model, loader.n_classes, train=False, flip_inference=True, scales=[1, 2, 1.5, 0.5, 0.75],
+                                      write_images=True, preprocess_mode=args.preprocess, time_exect=True)
+    print('Test accuracy: ' + str(test_acc.numpy()))
+    print('Test miou: ' + str(test_miou.numpy()))
 
 if __name__ == "__main__":
 
@@ -164,7 +216,7 @@ if __name__ == "__main__":
 
     # Train
     print('Training...')
-    train(loader=loader, optimizer=optimizer, loss_function=loss_function, model=model, config=CONFIG,
+    _train(loader=loader, optimizer=optimizer, loss_function=loss_function, model=model, config=CONFIG,
           lr=learning_rate,  name_best_model=args.weights_path, evaluation=True, preprocess_mode=args.preprocess)
 
 
