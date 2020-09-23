@@ -143,10 +143,9 @@ if __name__ == "__main__":
     # GPU to use
     n_gpu = 0
     os.environ["CUDA_VISIBLE_DEVICES"] = str(n_gpu)
-
     # Loader
     loader = Loader.Loader(dataFolderPath=args.dataset_path, n_classes=CONFIG['n_classes'], width=CONFIG['width'], height=CONFIG['height'], median_frequency=CONFIG['median_frequency'])
-
+    print('Dataset loaded...')
     # build model
     #model = MiniNetv2.MiniNetv2p(num_classes=CONFIG['n_classes'])
     model = ResNet50.ResNet50Seg(CONFIG['n_classes'], input_shape=(None, None, 3), weights='imagenet')
@@ -164,6 +163,7 @@ if __name__ == "__main__":
 
 
     # Train
+    print('Training...')
     train(loader=loader, optimizer=optimizer, loss_function=loss_function, model=model, config=CONFIG,
           lr=learning_rate,  name_best_model=args.weights_path, evaluation=True, preprocess_mode=args.preprocess)
 
