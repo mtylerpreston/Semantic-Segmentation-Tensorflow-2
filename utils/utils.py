@@ -186,11 +186,11 @@ def get_metrics(loader, model, n_classes, train=True, flip_inference=False, scal
 
         y_ = inference(model, x, y, n_classes, flip_inference, scales, preprocess_mode=preprocess_mode, time_exect=time_exect, train=train)
 
-        # tnsorboard
+        # tensorboard
         if optimizer != None and random.random() < 0.05:
             tf.summary.image('input', tf.cast(imgs, tf.uint8), step=optimizer.iterations + step)
             tf.summary.image('labels', tf.expand_dims( tf.cast(tf.argmax(y, 3)*int(255/n_classes), tf.uint8), -1), step=optimizer.iterations + step)
-            tf.summary.image('predicions', tf.expand_dims(tf.cast(tf.argmax(y_, 3)*int(255/n_classes), tf.uint8), -1), step=optimizer.iterations + step)
+            tf.summary.image('predictions', tf.expand_dims(tf.cast(tf.argmax(y_, 3)*int(255/n_classes), tf.uint8), -1), step=optimizer.iterations + step)
 
         # generate images
         if write_images:

@@ -278,9 +278,15 @@ class Loader:
         the median frequency balancing
         '''
         for image_label_train in self.label_train_list:
+            print(image_label_train)
             image = cv2.imread(image_label_train, 0)
             for label in range(self.n_classes):
+                print(label)
+                print(np.unique(image))
                 self.freq[label] = self.freq[label] + sum(sum(image == label))
+                if label == 2:
+                    break
+            break
 
         # Common code
         zeros = self.freq == 0

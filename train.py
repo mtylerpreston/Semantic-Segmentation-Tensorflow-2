@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
     CONFIG = {}
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n_classes", help="Number of classes to classify", default=11)
+    parser.add_argument("--n_classes", help="Number of classes to classify", default=2)
     parser.add_argument("--batch_size", help="Number of samples per batch", default=4)
     parser.add_argument("--init_lr", help="Initial learning rate", default=1e-4)
     parser.add_argument("--epochs", help="Number of epochs to train the dataset", default=400)

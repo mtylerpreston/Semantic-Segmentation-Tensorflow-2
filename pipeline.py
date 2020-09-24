@@ -1,9 +1,11 @@
 import numpy as np
-import os
+import cv2
+from PIL import Image
+import glob
 from sklearn.model_selection import train_test_split
+import os
 
 
-# train val test split
 def train_val_test_split(path_to_data, split_probs={'train': .8, 'test': .2}, random_state=99):
     '''
     path_to_data: string - path of directory for data. This should contain subdirectories 'images' and 'labels'.
@@ -52,5 +54,17 @@ def train_val_test_split(path_to_data, split_probs={'train': .8, 'test': .2}, ra
         dest_path = os.path.join(path_to_data, 'labels', 'test', file_name)
         os.rename(src_path, dest_path)
 
+def clean_masks(path_to_data):
+    files = glob.glob(os.path.join(path_to_data, '*', '*', '*'))
+    labels = [f for f in files if 'labels' in f]
+    for path in labels:
+        label = cv2.imread(path, 0)
+        label[label>125] = 255
+        label[label<125] = 0
+        new_path = path.split('.')[0]+'.png'
+        cv2.imwrite(new_path, label)
+
+
 if __name__ == '__main__':
-    train_val_test_split('datasets/endoscopy', split_probs={'train': .8, 'test': .2}, random_state=99)
+    # train_val_test_split('datasets/endoscopy', split_probs={'train': .8, 'test': .2}, random_state=99)
+    clean_masks('datasets/endoscopy')
